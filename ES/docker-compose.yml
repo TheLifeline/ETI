@@ -1,0 +1,89 @@
+version: '2.2'
+services:
+  es01:
+    image: elasticsearch:7.3.0
+    container_name: es01
+    environment:
+      - node.name=es01
+      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=docker-elasticsearch-cluster
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=/.*/
+      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+      - http.cors.allow-credentials=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TAKE_FILE_OWNERSHIP=true 
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./es01/data:/usr/share/elasticsearch/data
+      - ./es01/logs:/usr/share/elasticsearch/logs
+      - ./plugins:/usr/share/elasticsearch/plugins
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - esnet
+  es02:
+    image: elasticsearch:7.3.0
+    container_name: es02
+    environment:
+      - node.name=es02
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01,es02
+      - cluster.name=docker-elasticsearch-cluster
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=/.*/
+      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+      - http.cors.allow-credentials=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TAKE_FILE_OWNERSHIP=true 
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./es02/data:/usr/share/elasticsearch/data
+      - ./es02/logs:/usr/share/elasticsearch/logs
+      - ./plugins:/usr/share/elasticsearch/plugins
+    ports:
+      - 9201:9200
+      - 9301:9300
+    networks:
+      - esnet
+  kibana:
+    image: kibana:7.3.0
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://es01:9200
+      - I18N_LOCALE=zh-CN
+      - xpack.monitoring.ui.container.elasticsearch.enabled=false
+    ports:
+      - 5601:5601    
+    networks:
+      - esnet
+  dejavu:
+    image: appbaseio/dejavu:3.4.7
+    container_name: dejavu
+    ports:
+        - '1358:1358'
+    links:
+        - es01
+        - es02
+    networks:
+      - esnet
+
+networks:
+  esnet:
+    driver: bridge
