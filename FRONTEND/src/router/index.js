@@ -12,12 +12,29 @@ const router = new VueRouter({
     {
       path: '/index',
       name: 'Index',
-      component: () => import('../components/Index')
-    },
-    {
-      path: '/upload',
-      name: 'Uploade',
-      component: () => import('../components/Uploader')
+      component: () => import('../components/Index'),
+      children: [
+        {
+          path: 'file',
+          name: 'CardFile',
+          component: () => import('../components/CardFile')
+        },
+        {
+          path: 'upload',
+          name: 'CardUpload',
+          component: () => import('../components/CardUpload')
+        },
+        {
+          path: 'download',
+          name: 'CardDownload',
+          component: () => import('../components/CardDownload')
+        },
+        {
+          path: 'search',
+          name: 'CardSearch',
+          component: () => import('../components/CardSearch')
+        }
+      ]
     },
     {
       path: '/:catchAll(.*)',

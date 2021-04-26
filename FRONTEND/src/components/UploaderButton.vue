@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import Bus from './bus'
 
 export default {
   data() {
@@ -90,10 +89,6 @@ export default {
     }
   },
   mounted() {
-    // 文件上传成功的回调
-    Bus.$on('fileSuccess', () => {
-      console.log('文件上传成功')
-    })
   },
   computed: {},
   methods: {
@@ -126,8 +121,6 @@ export default {
     },
   },
   destroyed() {
-    Bus.$off('fileAdded')
-    Bus.$off('fileSuccess')
   },
 }
 </script>
