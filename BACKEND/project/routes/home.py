@@ -63,7 +63,7 @@ def get_case_info():
 
 @home_bp.route('/addCase', methods=['POST'])
 def add_case():
-    caseNmae = request.form.get("caseNmae")
+    caseNmae = request.get_json()["caseNmae"]
     case = models.Case.Case(caseName=caseNmae)
     models.db.session.add(case)
     models.db.session.commit()
