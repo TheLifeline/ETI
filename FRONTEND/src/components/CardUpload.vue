@@ -16,13 +16,15 @@
           :value="desserts[item.fileID].progess"
           :size="25"
           :width="5"
-          :color="
-            item.iserror ? 'rad accent-4' : item.completed ? 'green lighten-2' : 'grey'
-          "
+          :color="item.iserror ? 'red accent-4' : item.completed ? 'green lighten-2' : 'grey'"
         ></v-progress-circular>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
-        <v-icon class="mr-2" @click="pause(item)" v-show="!item.completed">
+        <v-icon
+          class="mr-2"
+          @click="pause(item)"
+          v-show="!item.completed & !item.iserror"
+        >
           {{ item.ispaused ? 'mdi-play' : 'mdi-pause' }}
         </v-icon>
         <v-icon @click="restart(item)">
@@ -89,6 +91,9 @@ export default {
           this.desserts[i].progess =
             this.$uploader.files[fileID].progress() * 100
           this.desserts[i].completed = this.$uploader.files[fileID].isComplete()
+          if (this.desserts[i].iserror) {
+            this.desserts[i].completed = 'Error'
+          }
           this.desserts[i].timeRemaining = this.$uploader.files[
             fileID
           ].timeRemaining()

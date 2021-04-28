@@ -20,25 +20,29 @@ def index():
 
 @home_bp.route('/upload', methods=['POST'])
 def upload_file():
-    file = request.files['file']
-    chunkNumber = request.form.get("chunkNumber")
-    # currentChunkSize = request.form.get("currentChunkSize")
-    # totalSize = request.form.get("totalSize")
-    # identifier = request.form.get("identifier")
-    filename = request.form.get("filename")
-    totalChunks = request.form.get("totalChunks")
-    # relativePath = request.form.get("relativePath")
-    describe = request.form.get("describe")
-    print(describe)
-    if file.filename == '':
-        return jsonify({"errno":400, "msg":"no file "})
-    if file:
-        filename = secure_filename(file.filename)
-        save_name = f"{chunkNumber}-{filename}"
-        file.save(os.path.join(UPLOAD_FOLDER, save_name))
-        if totalChunks ==chunkNumber:
-            threading.Thread(merg_file(filename,int(totalChunks),UPLOAD_FOLDER)).start()
-        return jsonify({"errno":0, "msg":"succeed "})
+    try:
+        file = request.files['file']
+        chunkNumber = request.form.get("chunkNumber")
+        # currentChunkSize = request.form.get("currentChunkSize")
+        # totalSize = request.form.get("totalSize")
+        # identifier = request.form.get("identifier")
+        filename = request.form.get("filename")
+        totalChunks = request.form.get("totalChunks")
+        # relativePath = request.form.get("relativePath")
+        describe = request.form.get("describe")
+        print(describe)
+        if file.filename == '':
+            return jsonify({"errno":400, "msg":"no file "})
+        if file:
+            filename = secure_filename(file.filename)
+            save_name = f"{chunkNumber}-{filename}"
+            file.save(os.path.join(UPLOAD_FOLDER, save_name))
+            if totalChunks ==chunkNumber:
+                threading.Thread(merg_file(filename,int(totalChunks),UPLOAD_FOLDER)).start()
+            return jsonify({"errno":0, "msg":"succeed "})
+    except Exception as e:
+        return jsonify({"errno":1, "msg":"succeed "}) ,500
+
 
 def merg_file(filename,totalChunks,file_path):
     chunkNumber = 1  # 分片序号
