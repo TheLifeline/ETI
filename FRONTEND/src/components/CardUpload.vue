@@ -1,22 +1,8 @@
 <template>
   <v-card class="pb-4 pt-1" rounded="lg">
     <v-card-title class="px-8 mx-6">
-      <span class="headline">上传列表</span>
+      <span class="headline py-4">上传列表</span>
       <v-spacer></v-spacer>
-      <v-responsive max-width="350">
-      <v-text-field
-        class="pa-4"
-        v-model="newCaseName"
-        dense
-        clearable
-        flat
-        hide-details
-        outlined
-        label="请输入要添加的案例名"
-        append-outer-icon="mdi-plus"
-        @click:append-outer="addCase"
-      />
-      </v-responsive>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -25,36 +11,54 @@
       loading-text="Loading... Please wait"
       class="px-6 mx-4"
     >
-      <template v-slot:[`item.actions`]>
-        <UploaderButton />
+      <template v-slot:[`item.progressRain`]="{ item }">
+        <v-progress-circular
+          :value="desserts[item.fileID].progess"
+          :size="25"
+          :width="5"
+          :color="
+            item.iserror ? 'rad accent-4' : item.completed ? 'green lighten-2' : 'grey'
+          "
+        ></v-progress-circular>
+      </template>
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon class="mr-2" @click="pause(item)" v-show="!item.completed">
+          {{ item.ispaused ? 'mdi-play' : 'mdi-pause' }}
+        </v-icon>
+        <v-icon @click="restart(item)">
+          {{
+            item.iserror
+              ? 'mdi-restart'
+              : item.completed
+              ? 'mdi-check-bold'
+              : ''
+          }}
+        </v-icon>
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script>
-import UploaderButton from './UploaderButton.vue'
-
 export default {
-  components: { UploaderButton },
   data: () => ({
-    newCaseName: '',
+    interval: {},
     desserts: [],
     loading: true,
     headers: [
       {
-        text: '案例名',
+        text: '进度',
         align: 'start',
         sortable: false,
-        value: 'caseName',
+        value: 'progressRain',
       },
-      { text: '图片', value: 'imageCount' },
-      { text: '文本', value: 'textCount' },
-      { text: '表单', value: 'sheetCount' },
-      { text: '镜像', value: 'mirrorCount' },
-      { text: '压缩包', value: 'zipCount' },
-      { text: '其他文件', value: 'othersCount' },
-      { text: '上传资料', value: 'actions', sortable: false },
+      { text: '文件名', value: 'fileName', sortable: false },
+      { text: '所属案例', value: 'caseName', sortable: false },
+      { text: '文件来源', value: 'fileOrigin', sortable: false },
+      { text: '文件大小', value: 'fileSize' },
+      { text: '是否完成', value: 'completed' },
+      { text: '剩余时间', value: 'timeRemaining' },
+      { text: '', value: 'actions', sortable: false },
     ],
   }),
   mounted: function () {
@@ -64,35 +68,50 @@ export default {
     getCaseInfo() {
       setTimeout(() => (this.loading = false), 8000)
       this.loading = true
-      this.$http
-        .get('caseinfo')
-        .then((response) => {
-          this.desserts = response.data
-          console.log(response.data)
+      console.log(this.$uploader.files)
+      for (let i = 0; i < this.$uploader.files.length; i++) {
+        this.desserts.push({
+          fileID: i,
+          progess: 0,
+          fileName: this.$uploader.files[i].name,
+          caseName: this.$uploader.files[i].uploader.opts.query.caseName,
+          fileOrigin: this.$uploader.files[i].uploader.opts.query.fileOrigin,
+          fileSize: this.$uploader.files[i].size,
+          timeRemaining: this.$uploader.files[i].timeRemaining(),
+          completed: this.$uploader.files[i].isComplete(),
+          ispaused: this.$uploader.files[i].paused,
+          iserror: this.$uploader.files[i].error,
         })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      }
+      this.interval = setInterval(() => {
+        for (let i = 0; i < this.desserts.length; i++) {
+          const fileID = this.desserts[i].fileID
+          this.desserts[i].progess =
+            this.$uploader.files[fileID].progress() * 100
+          this.desserts[i].completed = this.$uploader.files[fileID].isComplete()
+          this.desserts[i].timeRemaining = this.$uploader.files[
+            fileID
+          ].timeRemaining()
+        }
+      }, 500)
+      this.loading = false
     },
-    addCase() {
-      setTimeout(() => (this.loading = false), 8000)
-      this.$http
-        .post('addCase', { caseNmae: this.newCaseName })
-        .then((response) => {
-          console.log(response.data)
-          this.getCaseInfo()
-          this.newCaseName = ''
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => {
-          this.loading = false
-        })
+    pause(item) {
+      if (item.ispaused) {
+        this.$uploader.files[item.fileID].resume()
+      } else {
+        this.$uploader.files[item.fileID].pause()
+      }
+      item.ispaused = this.$uploader.files[item.fileID].paused
     },
+    restart(item) {
+      if (item.iserror) {
+        this.$uploader.files[item.fileID].retry()
+      }
+    },
+  },
+  beforeDestroy() {
+    clearInterval(this.interval)
   },
 }
 </script>
