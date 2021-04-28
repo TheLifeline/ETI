@@ -16,6 +16,7 @@
         <v-responsive max-width="660">
           <v-text-field
             v-model="searchStr"
+            clearable
             flat
             hide-details
             rounded
@@ -51,7 +52,6 @@ export default {
   methods: {
     searchFile() {
       console.log('success')
-      this.search_str = ''
       this.routerPath('/index/search')
     },
     routerPath(path) {
