@@ -22,13 +22,14 @@ def index():
 def upload_file():
     file = request.files['file']
     chunkNumber = request.form.get("chunkNumber")
-    # chunkSize = request.form.get("chunkSize")
     # currentChunkSize = request.form.get("currentChunkSize")
     # totalSize = request.form.get("totalSize")
     # identifier = request.form.get("identifier")
     filename = request.form.get("filename")
     totalChunks = request.form.get("totalChunks")
     # relativePath = request.form.get("relativePath")
+    describe = request.form.get("describe")
+    print(describe)
     if file.filename == '':
         return jsonify({"errno":400, "msg":"no file "})
     if file:
