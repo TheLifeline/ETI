@@ -94,7 +94,7 @@ export default {
   methods: {
     upload() {
       this.$uploader.opts.query = {
-        caseID: this.item.caseID,
+        caseID: this.rawItem.caseID,
         describe: this.describe,
         fileOrigin: this.fileOrigin,
         fileType: this.fileType,
