@@ -22,9 +22,9 @@
                 chips
                 show-size
                 counter
-                multiple
                 label="上传文件"
                 v-model="file"
+                @change="autoInput()"
               ></v-file-input>
             </v-col>
             <v-col cols="12" sm="6" md="6">
@@ -37,6 +37,8 @@
             <v-col cols="12" sm="6">
               <v-select
                 :items="fileTypeItems"
+                item-text="text"
+                item-value="value"
                 label="文件类型"
                 v-model="fileType"
                 required
@@ -83,13 +85,19 @@ export default {
       describe: '',
       fileOrigin: '',
       fileType: '',
-      fileTypeItems: ['图片', '文本', '表单', '镜像', '压缩包', '其他文件'],
+      fileTypeItems: [
+        { text: '图片', value: 'image' },
+        { text: '文本', value: 'text' },
+        { text: '音频', value: 'audio' },
+        { text: '视频', value: 'video' },
+        { text: '压缩包', value: 'zip' },
+        { text: '其他文件', value: 'others' },
+      ],
       fileLable: '',
       fileLableItems: ['指纹', '结果文件', '中间镜像', '数据流文件'],
     }
   },
-  mounted() {
-  },
+  mounted() {},
   computed: {},
   methods: {
     upload() {
@@ -101,7 +109,7 @@ export default {
         fileType: this.fileType,
         fileLable: this.fileLable,
       }
-      this.$uploader.addFile(this.file[0])
+      this.$uploader.addFile(this.file)
       this.$uploader.upload()
       this.file = null
       this.fileType = ''
@@ -109,6 +117,12 @@ export default {
       this.fileLable = ''
       this.textarea = ''
       this.dialog = false
+    },
+    autoInput() {
+      if (this.file) {
+        // todo
+        console.log(this.file.type)
+      }
     },
   },
   destroyed() {},
