@@ -25,8 +25,8 @@
       loading-text="Loading... Please wait"
       class="px-6 mx-4"
     >
-      <template v-slot:[`item.actions`]>
-        <UploaderButton />
+      <template v-slot:[`item.actions`]="{ item }">
+        <UploaderButton :rawItem=item />
       </template>
     </v-data-table>
   </v-card>

@@ -74,8 +74,8 @@
 </template>
 
 <script>
-
 export default {
+  props: ['rawItem'],
   data() {
     return {
       dialog: false,
@@ -93,23 +93,8 @@ export default {
   computed: {},
   methods: {
     upload() {
-      // this.dialog = false
-      // console.log(this.fileType)
-      // this.fileType = ''
-      // console.log(this.fileOrigin)
-      // this.fileOrigin = ''
-      // console.log(this.fileLable)
-      // this.fileLable = ''
-      // console.log(this.textarea)
-      // this.textarea = ''
-      // 打开文件选择框
-      console.log(this.file)
-      // var uploader = new Uploader({
-      //   target: '//localhost:5000/upload',
-      //   query: { describe: this.describe,fileOrigin: this.fileOrigin,fileType: this.fileType,fileLable: this.fileLable },
-      //   testChunks:false
-      // })
-      this.$uploader.query = {
+      this.$uploader.opts.query = {
+        caseID: this.item.caseID,
         describe: this.describe,
         fileOrigin: this.fileOrigin,
         fileType: this.fileType,
@@ -118,10 +103,14 @@ export default {
       this.$uploader.addFile(this.file[0])
       this.$uploader.upload()
       this.file = null
+      this.fileType = ''
+      this.fileOrigin = ''
+      this.fileLable = ''
+      this.textarea = ''
+      this.dialog = false
     },
   },
-  destroyed() {
-  },
+  destroyed() {},
 }
 </script>
 
