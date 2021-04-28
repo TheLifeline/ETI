@@ -31,7 +31,7 @@
     <v-main class="grey lighten-3">
       <v-container>
         <v-row align="center" justify="center">
-          <v-col class="col-8">
+          <v-col class="col-10">
             <router-view />
           </v-col>
         </v-row>
