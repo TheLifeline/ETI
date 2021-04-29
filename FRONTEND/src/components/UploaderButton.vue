@@ -101,6 +101,7 @@ export default {
   computed: {},
   methods: {
     upload() {
+      this.$uploader.opts.target = '//localhost:5000/file/upload'
       this.$uploader.opts.query = {
         caseID: this.rawItem.caseID,
         caseName: this.rawItem.caseName,

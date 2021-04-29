@@ -52,6 +52,7 @@ export default {
   methods: {
     searchFile() {
       console.log('success')
+      // todo
       this.routerPath('/index/search')
     },
     routerPath(path) {

@@ -65,7 +65,7 @@ export default {
       setTimeout(() => (this.loading = false), 8000)
       this.loading = true
       this.$http
-        .get('caseinfo')
+        .get('/case/caseinfo')
         .then((response) => {
           this.desserts = response.data
           console.log(response.data)
@@ -80,7 +80,7 @@ export default {
     addCase() {
       setTimeout(() => (this.loading = false), 8000)
       this.$http
-        .post('addCase', { caseNmae: this.newCaseName })
+        .post('/case/addCase', { caseNmae: this.newCaseName })
         .then((response) => {
           console.log(response.data)
           this.getCaseInfo()

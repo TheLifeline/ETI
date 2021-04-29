@@ -8,7 +8,6 @@ import Uploader from 'simple-uploader.js'
 Vue.config.productionTip = false
 // 设置上传对象
 var uploader = new Uploader({
-  target: '//localhost:5000/upload',
   testChunks: false
 })
 // 配置请求的根路径

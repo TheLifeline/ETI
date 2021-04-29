@@ -16,7 +16,13 @@
           :value="desserts[item.fileID].progess"
           :size="25"
           :width="5"
-          :color="item.iserror ? 'red accent-4' : item.completed ? 'green lighten-2' : 'grey'"
+          :color="
+            item.iserror
+              ? 'red accent-4'
+              : item.completed
+              ? 'green lighten-2'
+              : 'grey'
+          "
         ></v-progress-circular>
       </template>
       <template v-slot:[`item.actions`]="{ item }">
@@ -35,6 +41,9 @@
               ? 'mdi-check-bold'
               : ''
           }}
+        </v-icon>
+        <v-icon @click="cancel(item)">
+          {{ item.completed ? '' : 'mdi-cancel' }}
         </v-icon>
       </template>
     </v-data-table>
@@ -70,7 +79,6 @@ export default {
     getCaseInfo() {
       setTimeout(() => (this.loading = false), 8000)
       this.loading = true
-      console.log(this.$uploader.files)
       for (let i = 0; i < this.$uploader.files.length; i++) {
         this.desserts.push({
           fileID: i,
@@ -88,15 +96,18 @@ export default {
       this.interval = setInterval(() => {
         for (let i = 0; i < this.desserts.length; i++) {
           const fileID = this.desserts[i].fileID
-          this.desserts[i].progess =
-            this.$uploader.files[fileID].progress() * 100
-          this.desserts[i].completed = this.$uploader.files[fileID].isComplete()
+          const itemFile = this.$uploader.files[fileID]
+          this.desserts[i].completed = itemFile.isComplete()
+          if (!this.desserts[i].completed) {
+            this.desserts[i].progess = 100
+          }
+          this.desserts[i].timeRemaining = itemFile.timeRemaining()
+          this.desserts[i].ispaused = itemFile.paused
+          this.desserts[i].iserror = itemFile.error
           if (this.desserts[i].iserror) {
             this.desserts[i].completed = 'Error'
+            this.desserts[i].progess = 100
           }
-          this.desserts[i].timeRemaining = this.$uploader.files[
-            fileID
-          ].timeRemaining()
         }
       }, 500)
       this.loading = false
@@ -112,6 +123,11 @@ export default {
     restart(item) {
       if (item.iserror) {
         this.$uploader.files[item.fileID].retry()
+      }
+    },
+    cancel(item) {
+      if (!item.completed) {
+        this.$uploader.files[item.fileID].cancel()
       }
     },
   },
