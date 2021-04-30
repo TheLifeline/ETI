@@ -13,7 +13,7 @@
     >
       <template v-slot:[`item.progressRain`]="{ item }">
         <v-progress-circular
-          :value="desserts[item.fileID].progess"
+          :value="item.progess"
           :size="25"
           :width="5"
           :color="
@@ -98,9 +98,9 @@ export default {
           const fileID = this.desserts[i].fileID
           const itemFile = this.$uploader.files[fileID]
           this.desserts[i].completed = itemFile.isComplete()
-          if (!this.desserts[i].completed) {
-            this.desserts[i].progess = 100
-          }
+          this.desserts[i].completed
+            ? (this.desserts[i].progess = 100)
+            : (this.desserts[i].progess = itemFile.progress())
           this.desserts[i].timeRemaining = itemFile.timeRemaining()
           this.desserts[i].ispaused = itemFile.paused
           this.desserts[i].iserror = itemFile.error

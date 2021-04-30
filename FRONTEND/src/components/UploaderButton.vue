@@ -24,7 +24,7 @@
                 counter
                 label="上传文件"
                 v-model="file"
-                @change="autoInput()"
+                @change="onChange()"
               ></v-file-input>
             </v-col>
             <v-col cols="12" sm="6" md="6">
@@ -102,6 +102,7 @@ export default {
   methods: {
     upload() {
       this.$uploader.opts.target = '//localhost:5000/file/upload'
+      this.$uploader.opts.allowDuplicateUploads = true
       this.$uploader.opts.query = {
         caseID: this.rawItem.caseID,
         caseName: this.rawItem.caseName,
@@ -119,10 +120,27 @@ export default {
       this.textarea = ''
       this.dialog = false
     },
-    autoInput() {
+    onChange() {
       if (this.file) {
         // todo
-        console.log(this.file.type)
+        this.$http
+          .post('/file/test', {
+            caseID: this.rawItem.caseID,
+            caseName: this.rawItem.caseName,
+            fileName: this.file.name,
+          })
+          .then((response) => {
+            console.log(response.data)
+          })
+          .catch((error) => {
+            alert(error.response.data.msg)
+            this.file = null
+          })
+          .finally(() => {})
+          // todo：添加一个自动填充类型的
+        console.log(this.file)
+      } else {
+        this.fileType = ''
       }
     },
   },
