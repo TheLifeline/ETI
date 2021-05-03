@@ -66,7 +66,7 @@ def search_file():
     pass
 
 @file_bp.route('/download/<caseID>/<filename>', methods=['POST'])
-def search_file():
+def download_file():
     # todo
     pass
 
