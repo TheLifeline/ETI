@@ -3,7 +3,8 @@ from .config import config
 from . import models, routes, services
 from .models.Case import Case,get_all_case_info
 from .models.User import User
-from .models.File import File
+from .models.File import File,file_type
+import random
 
 def create_app(config_name='default'):
     app = Flask(__name__)
@@ -24,22 +25,10 @@ def create_app(config_name='default'):
             models.db.session.add(case)
             models.db.session.commit()
             temp_id=Case.query.filter_by(caseName="test").first().id
-            file1 = File(caseID=temp_id,downloadPath="test",fileName="test",fileOrigin="test",fileType="image",fileLable="test",fileDescribe="test")
-            models.db.session.add(file1)
-            models.db.session.commit()
-            file1 = File(caseID=temp_id,downloadPath="test",fileName="test",fileOrigin="test",fileType="text",fileLable="test",fileDescribe="test")
-            models.db.session.add(file1)
-            models.db.session.commit()
-            file1 = File(caseID=temp_id,downloadPath="test",fileName="test",fileOrigin="test",fileType="audio",fileLable="test",fileDescribe="test")
-            models.db.session.add(file1)
-            models.db.session.commit()
-            file1 = File(caseID=temp_id,downloadPath="test",fileName="test",fileOrigin="test",fileType="video",fileLable="test",fileDescribe="test")
-            models.db.session.add(file1)
-            models.db.session.commit()
-            file1 = File(caseID=temp_id,downloadPath="test",fileName="test",fileOrigin="test",fileType="zip",fileLable="test",fileDescribe="test")
-            models.db.session.add(file1)
-            models.db.session.commit()
-            file1 = File(caseID=temp_id,downloadPath="test",fileName="test",fileOrigin="test",fileType="others",fileLable="test",fileDescribe="test")
-            models.db.session.add(file1)
-            models.db.session.commit()
+            temp_caseName="test"
+            for i in range(10):
+                fileType=random.choice(file_type)
+                file1 = File(caseID=temp_id,fileName="test",fileOrigin="test",fileType=fileType,fileLable="test",fileDescribe="test")
+                models.db.session.add(file1)
+                models.db.session.commit()
     return app

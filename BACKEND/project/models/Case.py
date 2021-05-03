@@ -1,5 +1,6 @@
 from . import db
-file_type=["image","text","audio","video","zip","others"]
+from .File import file_type
+
 class Case(db.Model):
     __tablename__ = 'table_case'
     id = db.Column(db.Integer, primary_key=True)

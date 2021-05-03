@@ -1,4 +1,5 @@
 from . import db
+file_type=["image","text","audio","video","zip","others"]
 
 class File(db.Model):
     __tablename__ = 'table_file'
@@ -11,3 +12,18 @@ class File(db.Model):
     fileLable = db.Column(db.Text())
     fileDescribe = db.Column(db.Text())
     createtime = db.Column(db.DateTime())
+
+    @property
+    def serialize(self):
+       """Return object data in easily serializable format"""
+       return {
+           "id": self.id,
+           "caseID": self.caseID,
+           "downloadPath": self.downloadPath,
+           "fileName": self.fileName,
+           "fileOrigin": self.fileOrigin,
+           "fileType": self.fileType,
+           "fileLable": self.fileLable,
+           "fileDescribe": self.fileDescribe,
+           "createtime": self.createtime
+       }
