@@ -13,7 +13,7 @@
     >
       <template v-slot:[`item.progressRain`]="{ item }">
         <v-progress-circular
-          :value="item.progess"
+          :value="item.progess * 100"
           :size="25"
           :width="5"
           :color="
@@ -82,35 +82,38 @@ export default {
       for (let i = 0; i < this.$uploader.files.length; i++) {
         this.desserts.push({
           fileID: i,
-          progess: 0,
+          itemFile: this.$uploader.files[i],
           fileName: this.$uploader.files[i].name,
-          caseName: this.$uploader.files[i].uploader.opts.query.caseName,
-          fileOrigin: this.$uploader.files[i].uploader.opts.query.fileOrigin,
           fileSize: this.$uploader.files[i].size,
+          caseName: this.$uploader.files[i].query.caseName,
+          fileOrigin: this.$uploader.files[i].query.fileOrigin,
           timeRemaining: this.$uploader.files[i].timeRemaining(),
           completed: this.$uploader.files[i].isComplete(),
+          progess: this.$uploader.files[i].progress(),
           ispaused: this.$uploader.files[i].paused,
           iserror: this.$uploader.files[i].error,
         })
       }
-      this.interval = setInterval(() => {
-        for (let i = 0; i < this.desserts.length; i++) {
-          const fileID = this.desserts[i].fileID
-          const itemFile = this.$uploader.files[fileID]
-          this.desserts[i].completed = itemFile.isComplete()
-          this.desserts[i].completed
-            ? (this.desserts[i].progess = 100)
-            : (this.desserts[i].progess = itemFile.progress())
-          this.desserts[i].timeRemaining = itemFile.timeRemaining()
-          this.desserts[i].ispaused = itemFile.paused
-          this.desserts[i].iserror = itemFile.error
-          if (this.desserts[i].iserror) {
-            this.desserts[i].completed = 'Error'
-            this.desserts[i].progess = 100
-          }
-        }
-      }, 500)
+      this.resetFileInterval()
       this.loading = false
+    },
+    resetFileInterval() {
+      clearInterval(this.interval)
+      this.interval = setInterval(() => {
+        this.desserts.forEach(function (item, index) {
+          const itemFile = item.itemFile
+          item.fileName = itemFile.name
+          item.caseName = itemFile.query.caseName
+          item.fileOrigin = itemFile.query.fileOrigin
+          item.fileSize = itemFile.size
+          item.completed = itemFile.isComplete()
+          item.progess = itemFile.progress()
+          item.timeRemaining = itemFile.timeRemaining()
+          item.ispaused = itemFile.paused
+          item.iserror = itemFile.error
+          if (item.iserror) { item.completed = '错误' }
+        })
+      }, 500)
     },
     pause(item) {
       if (item.ispaused) {
@@ -127,7 +130,10 @@ export default {
     },
     cancel(item) {
       if (!item.completed) {
-        this.$uploader.files[item.fileID].cancel()
+        clearInterval(this.interval)
+        this.desserts.splice(item.fileID, 1)
+        item.itemFile.cancel()
+        this.resetFileInterval()
       }
     },
   },

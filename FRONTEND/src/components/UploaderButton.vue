@@ -103,13 +103,17 @@ export default {
     upload() {
       this.$uploader.opts.target = '//localhost:5000/file/upload'
       this.$uploader.opts.allowDuplicateUploads = true
-      this.$uploader.opts.query = {
+      const fileQuery = {
         caseID: this.rawItem.caseID,
         caseName: this.rawItem.caseName,
         describe: this.describe,
         fileOrigin: this.fileOrigin,
         fileType: this.fileType,
         fileLable: this.fileLable,
+      }
+      this.$uploader.opts.query = fileQuery
+      this.$uploader.opts.initFileFn = function (file, query = fileQuery) {
+        file.query = query
       }
       this.$uploader.addFile(this.file)
       this.$uploader.upload()
@@ -137,7 +141,7 @@ export default {
             this.file = null
           })
           .finally(() => {})
-          // todo：添加一个自动填充类型的
+        // todo：添加一个自动填充类型的
         console.log(this.file)
       } else {
         this.fileType = ''
