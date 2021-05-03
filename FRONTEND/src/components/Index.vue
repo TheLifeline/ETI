@@ -51,13 +51,11 @@ export default {
   },
   methods: {
     searchFile() {
-      console.log('success')
-      // todo
-      this.routerPath('/index/search')
+      this.routerPath('/index/search', { searchStr: this.searchStr })
     },
-    routerPath(path) {
+    routerPath(path, query) {
       if (this.$route.path !== path) {
-        this.$router.push({ path: path })
+        this.$router.push({ path: path, query: query })
       }
     },
   },

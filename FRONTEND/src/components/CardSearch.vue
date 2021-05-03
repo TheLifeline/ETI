@@ -3,20 +3,6 @@
     <v-card-title class="px-8 mx-6">
       <span class="headline">搜索结果</span>
       <v-spacer></v-spacer>
-      <v-responsive max-width="350">
-      <v-text-field
-        class="pa-4"
-        v-model="newCaseName"
-        dense
-        clearable
-        flat
-        hide-details
-        outlined
-        label="请输入要添加的案例名"
-        append-outer-icon="mdi-plus"
-        @click:append-outer="addCase"
-      />
-      </v-responsive>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -38,9 +24,9 @@ import UploaderButton from './UploaderButton.vue'
 export default {
   components: { UploaderButton },
   data: () => ({
-    newCaseName: '',
-    desserts: [],
     loading: true,
+    searchStr: '',
+    desserts: [],
     headers: [
       {
         text: '案例名',
@@ -58,6 +44,7 @@ export default {
     ],
   }),
   mounted: function () {
+    this.searchStr = this.$route.query.searchStr
     this.getCaseInfo()
   },
   methods: {
@@ -65,29 +52,12 @@ export default {
       setTimeout(() => (this.loading = false), 8000)
       this.loading = true
       this.$http
-        .get('/case/caseinfo')
+        .post('/file/search', { searchStr: this.searchStr })
         .then((response) => {
-          this.desserts = response.data
           console.log(response.data)
         })
         .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => {
-          this.loading = false
-        })
-    },
-    addCase() {
-      setTimeout(() => (this.loading = false), 8000)
-      this.$http
-        .post('/case/addCase', { caseNmae: this.newCaseName })
-        .then((response) => {
-          console.log(response.data)
-          this.getCaseInfo()
-          this.newCaseName = ''
-        })
-        .catch((error) => {
-          console.log(error)
+          console.log(error.response.data.msg)
         })
         .finally(() => {
           this.loading = false
