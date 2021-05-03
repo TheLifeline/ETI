@@ -5,6 +5,7 @@ from flask_jwt import jwt_required, current_identity
 
 from ..config import basedir
 from ..models.File import File
+from ..models.Case import Case
 from project import models
 import threading
 import os
@@ -62,8 +63,9 @@ def test_file():
 
 @file_bp.route('/search', methods=['POST'])
 def search_file():
-    # todo
-    pass
+    caseID = request.get_json()["searchStr"]
+    qryresult = File.query.join(Case, File.caseID==Case.id).add_columns(Case.caseName)
+    return jsonify(json_list=[{**i[0].serialize,"caseNmae":i[1]} for i in qryresult.all()])
 
 @file_bp.route('/download/<caseID>/<filename>', methods=['POST'])
 def download_file():
