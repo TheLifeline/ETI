@@ -1,16 +1,17 @@
 <template>
-  <v-card class="pb-4 pt-1" rounded="lg">
-    <v-card-title class="px-8 mx-6">
-      <span class="headline py-4">上传列表</span>
-      <v-spacer></v-spacer>
-    </v-card-title>
     <v-data-table
       :headers="headers"
       :items="desserts"
       :loading="loading"
       loading-text="Loading... Please wait"
-      class="px-6 mx-4"
+      class="px-8 py-4 elevation-1"
     >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title class="headline">上传列表</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical></v-divider>
+        </v-toolbar>
+      </template>
       <template v-slot:[`item.progressRain`]="{ item }">
         <v-progress-circular
           :value="item.progess * 100"
@@ -47,7 +48,6 @@
         </v-icon>
       </template>
     </v-data-table>
-  </v-card>
 </template>
 
 <script>
@@ -111,7 +111,9 @@ export default {
           item.timeRemaining = itemFile.timeRemaining()
           item.ispaused = itemFile.paused
           item.iserror = itemFile.error
-          if (item.iserror) { item.completed = '错误' }
+          if (item.iserror) {
+            item.completed = '错误'
+          }
         })
       }, 500)
     },

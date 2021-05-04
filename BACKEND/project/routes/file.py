@@ -1,7 +1,8 @@
 from flask import Blueprint
 from flask import jsonify,request
-from flask import send_file, send_from_directory
+from flask import send_file, send_from_directory, make_response
 from flask_jwt import jwt_required, current_identity
+from werkzeug.exceptions import HTTPException, NotFound
 
 from ..config import basedir
 from ..models.File import File
@@ -63,17 +64,26 @@ def test_file():
 
 @file_bp.route('/search', methods=['POST'])
 def search_file():
-    caseID = request.get_json()["searchStr"]
+    searchStr = request.get_json()["searchStr"]
     qryresult = File.query.join(Case, File.caseID==Case.id).add_columns(Case.caseName)
-    return jsonify(json_list=[{**i[0].serialize,"caseNmae":i[1]} for i in qryresult.all()])
+    return jsonify(json_list=[{**i[0].serialize,"caseName":i[1]} for i in qryresult.all()])
 
-@file_bp.route('/download/<caseID>/<filename>', methods=['POST'])
-def download_file():
-    # todo
-    pass
+@file_bp.route('/download/<caseID>/<fileName>', methods=['GET'])
+def download_file(caseID,fileName):
+    try:
+        directory = os.path.join(ROOT_UPLOAD_FOLDER,str(caseID))
+        response = make_response(send_from_directory(directory, fileName, as_attachment=True))
+        response.headers["Content-Disposition"] = "attachment; filename={}".format(file_name.encode().decode('latin-1'))
+        return response
+    except HTTPException as err:
+        return jsonify({"msg":"请求的文件有误"}) ,400
+    except NotFound as err:
+        return jsonify({"msg":"请求的文件有误"}) ,400
+    except Exception as err:
+        return jsonify({"msg":str(err)}) ,500
 
 def merg_file(filename,totalChunks,file_path):
-    # todo
+    # todo 错误控制
     chunkNumber = 1  # 分片序号
     with open(os.path.join(file_path,filename), 'wb') as target_file:  # 创建新文件
         while True:

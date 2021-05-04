@@ -1,35 +1,36 @@
 <template>
-  <v-card class="pb-4 pt-1" rounded="lg">
-    <v-card-title class="px-8 mx-6">
-      <span class="headline">文件总览</span>
-      <v-spacer></v-spacer>
-      <v-responsive max-width="350">
-      <v-text-field
-        class="pa-4"
-        v-model="newCaseName"
-        dense
-        clearable
-        flat
-        hide-details
-        outlined
-        label="请输入要添加的案例名"
-        append-outer-icon="mdi-plus"
-        @click:append-outer="addCase"
-      />
-      </v-responsive>
-    </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="desserts"
-      :loading="loading"
-      loading-text="Loading... Please wait"
-      class="px-6 mx-4"
-    >
-      <template v-slot:[`item.actions`]="{ item }">
-        <UploaderButton :rawItem=item />
-      </template>
-    </v-data-table>
-  </v-card>
+  <v-data-table
+    :headers="headers"
+    :items="desserts"
+    :loading="loading"
+    loading-text="Loading... Please wait"
+    class="px-8 py-4 elevation-1"
+  >
+    <template v-slot:top>
+      <v-toolbar flat>
+        <v-toolbar-title class="headline">文件总览</v-toolbar-title>
+        <v-divider class="mx-4" inset vertical></v-divider>
+        <v-spacer></v-spacer>
+        <v-responsive max-width="350">
+          <v-text-field
+            class="pa-4"
+            v-model="newCaseName"
+            dense
+            clearable
+            flat
+            hide-details
+            outlined
+            label="请输入要添加的案例名"
+            append-outer-icon="mdi-plus"
+            @click:append-outer="addCase"
+          />
+        </v-responsive>
+      </v-toolbar>
+    </template>
+    <template v-slot:[`item.actions`]="{ item }">
+      <UploaderButton :rawItem="item" />
+    </template>
+  </v-data-table>
 </template>
 
 <script>

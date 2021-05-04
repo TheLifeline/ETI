@@ -25,11 +25,6 @@ const router = new VueRouter({
           component: () => import('../components/CardUpload')
         },
         {
-          path: 'download',
-          name: 'CardDownload',
-          component: () => import('../components/CardDownload')
-        },
-        {
           path: 'search',
           name: 'CardSearch',
           component: () => import('../components/CardSearch')

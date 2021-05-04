@@ -9,7 +9,6 @@
 
         <v-btn class="ml-10" text to="/index/file">文件总览</v-btn>
         <v-btn class="ml-5" text to="/index/upload">上传列表</v-btn>
-        <v-btn class="ml-5" text to="/index/download">下载列表</v-btn>
 
         <v-spacer />
 
