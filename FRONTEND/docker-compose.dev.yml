@@ -1,0 +1,8 @@
+version: '2.2'
+services:
+    vue-web:
+        image: nginx
+        container_name: vue-web
+        volumes:
+            - ./dist:/usr/share/nginx/html
+        network_mode: "host"
