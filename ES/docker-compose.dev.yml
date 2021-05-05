@@ -5,9 +5,7 @@ services:
     container_name: es01
     environment:
       - node.name=es01
-      - discovery.seed_hosts=es02
-      - cluster.initial_master_nodes=es01,es02
-      - cluster.name=docker-elasticsearch-cluster
+      - discovery.type=single-node
       - bootstrap.memory_lock=true
       - http.cors.enabled=true
       - http.cors.allow-origin=/.*/
@@ -23,43 +21,10 @@ services:
         soft: -1
         hard: -1
     volumes:
-      - ./es01/data:/usr/share/elasticsearch/data
-      - ./es01/logs:/usr/share/elasticsearch/logs
       - ./plugins:/usr/share/elasticsearch/plugins
     ports:
       - 19200:9200
       - 19300:9300
-    networks:
-      - esnet
-  es02:
-    image: elasticsearch:7.3.0
-    container_name: es02
-    environment:
-      - node.name=es02
-      - discovery.seed_hosts=es01
-      - cluster.initial_master_nodes=es01,es02
-      - cluster.name=docker-elasticsearch-cluster
-      - bootstrap.memory_lock=true
-      - http.cors.enabled=true
-      - http.cors.allow-origin=/.*/
-      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
-      - http.cors.allow-credentials=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - TAKE_FILE_OWNERSHIP=true 
-    ulimits:
-      nofile:
-        soft: 65536
-        hard: 65536
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - ./es02/data:/usr/share/elasticsearch/data
-      - ./es02/logs:/usr/share/elasticsearch/logs
-      - ./plugins:/usr/share/elasticsearch/plugins
-    ports:
-      - 19201:9200
-      - 19301:9300
     networks:
       - esnet
   kibana:
@@ -80,7 +45,6 @@ services:
         - '11358:1358'
     links:
         - es01
-        - es02
     networks:
       - esnet
 
