@@ -1,0 +1,30 @@
+version: '2.2'
+services:
+    postgres:
+        image: postgres
+        container_name: postgres
+        environment:
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+            POSTGRES_DB: test
+        ports:
+            - 5432:5432
+        volumes:
+            - ./data/postgresql:/var/lib/postgresql/data
+        network_mode: "bridge"
+
+    flask-web:
+        build: .
+        container_name: flask-web
+        ports:
+            - '5000:5000'
+        volumes:
+            - ./project/:/project
+        environment:
+            FLASK_APP: /project/:create_app('test')
+            FLASK_RUN_HOST: 0.0.0.0
+            DATABASE_TEST_URL: postgresql://root:root@postgres:5432/test
+        command: ["flask","run"]
+        links:
+            - postgres
+        network_mode: "bridge"

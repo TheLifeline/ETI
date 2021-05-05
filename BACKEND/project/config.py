@@ -20,14 +20,14 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data-test.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_TEST_URL') or 'sqlite:///:memory:'
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'data.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
 config = {
     'development': DevelopmentConfig,
-    'testing': TestingConfig,
+    'test': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig
 }

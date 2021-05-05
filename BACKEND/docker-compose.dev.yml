@@ -1,0 +1,16 @@
+version: '2.2'
+services:
+
+    flask-web:
+        build: .
+        container_name: flask-web
+        ports:
+            - '5000:5000'
+        volumes:
+            - ./project/:/project
+        environment:
+            FLASK_APP: /project/:create_app('development')
+            FLASK_RUN_HOST: 0.0.0.0
+            FLASK_DEBUG: 1
+        command: ["flask","run"]
+        network_mode: "bridge"
