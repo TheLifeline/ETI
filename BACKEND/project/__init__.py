@@ -24,11 +24,4 @@ def create_app(config_name='default'):
             case = Case(caseName="test")
             models.db.session.add(case)
             models.db.session.commit()
-            temp_id=Case.query.filter_by(caseName="test").first().id
-            temp_caseName="test"
-            for i in range(10):
-                fileType=random.choice(file_type)
-                file1 = File(caseID=temp_id,fileName="test",fileOrigin="test",fileType=fileType,fileLable="test",fileDescribe="test")
-                models.db.session.add(file1)
-                models.db.session.commit()
     return app
