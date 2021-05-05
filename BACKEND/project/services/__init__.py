@@ -4,5 +4,5 @@ from .ES import init
 
 def init_app(app):
     webJwtServices(app)
-    CORS(app,supports_credentials=True)
+    CORS(app)
     init()
