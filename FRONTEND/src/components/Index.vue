@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import Bus from './Bus'
 export default {
   data: () => ({
     searchStr: '',
@@ -50,7 +51,8 @@ export default {
   },
   methods: {
     searchFile() {
-      this.routerPath('/index/search', { searchStr: this.searchStr })
+      this.routerPath('/index/search')
+      Bus.$emit('mysearch', this.searchStr)
     },
     routerPath(path, query) {
       if (this.$route.path !== path) {

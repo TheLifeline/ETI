@@ -26,9 +26,10 @@
 </template>
 
 <script>
+import Bus from './Bus'
 export default {
   data: () => ({
-    loading: true,
+    loading: false,
     selected: [],
     desserts: [],
     dessertHeaders: [
@@ -46,8 +47,12 @@ export default {
     ],
   }),
   mounted: function () {
-    this.searchStr = this.$route.query.searchStr
-    this.getCaseInfo()
+    Bus.$on('mysearch', (val) => {
+      this.getSearch(val)
+    })
+  },
+  beforeDestroy: function () {
+    Bus.$off('mysearch')
   },
   methods: {
     download() {
@@ -93,16 +98,16 @@ export default {
         window.URL.revokeObjectURL(blobURL)
       }
     },
-    getCaseInfo() {
-      setTimeout(() => (this.loading = false), 8000)
+    getSearch(searchStr) {
+      console.log(searchStr)
       this.loading = true
       this.$http
-        .post('/file/search', { searchStr: this.searchStr })
+        .post('/file/search', { searchStr: searchStr })
         .then((response) => {
           this.desserts = response.data.json_list
         })
         .catch((error) => {
-          console.log(error.response.data.msg)
+          alert(error.response.data.msg)
         })
         .finally(() => {
           this.loading = false
