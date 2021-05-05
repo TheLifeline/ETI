@@ -4,7 +4,6 @@ services:
     image: elasticsearch:7.3.0
     container_name: es01
     environment:
-      - node.name=es01
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - http.cors.enabled=true
