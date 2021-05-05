@@ -13,4 +13,4 @@ services:
             FLASK_RUN_HOST: 0.0.0.0
             FLASK_DEBUG: 1
         command: ["flask","run"]
-        network_mode: "bridge"
+        network_mode: "host"

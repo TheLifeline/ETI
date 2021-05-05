@@ -7,6 +7,7 @@ from werkzeug.exceptions import HTTPException, NotFound
 from ..config import basedir
 from ..models.File import File
 from ..models.Case import Case
+from ..services.ES import search_file_in_ES,save_file
 from project import models
 import threading
 import os
@@ -27,21 +28,20 @@ def upload_file():
         fileType = request.form.get("fileType")
         fileLable = request.form.get("fileLable")
         caseID = request.form.get("caseID")
+        caseName = request.form.get("caseName")
         upload_folder = os.path.join(ROOT_UPLOAD_FOLDER,str(caseID))
         if file is None:
             return jsonify({"msg":"未上传文件！"}),400
         if totalChunks == 1:
             file.save(os.path.join(upload_folder, filename))
-            file1 = File(caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
-            models.db.session.add(file1)
-            models.db.session.commit()
+            temp_file = File(caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe).save()
+            save_file(meta={'id': temp_file.id},caseName=caseName,caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
         else:
             file.save(os.path.join(upload_folder, f"{chunkNumber}-{filename}"))
             if totalChunks ==chunkNumber:
                 threading.Thread(merg_file(filename,int(totalChunks),upload_folder)).start()
-                file1 = File(caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
-                models.db.session.add(file1)
-                models.db.session.commit()
+                temp_file = File(caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe).save()
+                save_file(meta={'id': temp_file.id},caseName=caseName,caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
         return jsonify({"msg":"success"})
     except Exception as err:
         return jsonify({"msg":str(err)}) ,500
@@ -64,16 +64,23 @@ def test_file():
 
 @file_bp.route('/search', methods=['POST'])
 def search_file():
-    searchStr = request.get_json()["searchStr"]
-    qryresult = File.query.join(Case, File.caseID==Case.id).add_columns(Case.caseName)
-    return jsonify(json_list=[{**i[0].serialize,"caseName":i[1]} for i in qryresult.all()])
+    try:
+        searchStr = request.get_json()["searchStr"]
+        if searchStr=='':
+            return jsonify(json_list=[])
+        caseID = None
+        if "caseID" in request.get_json():
+            caseID = request.get_json()["caseID"]
+        return jsonify(json_list=search_file_in_ES(searchStr,caseID))
+    except Exception as err:
+        return jsonify({"msg":str(err)}) ,500
 
 @file_bp.route('/download/<caseID>/<fileName>', methods=['GET'])
 def download_file(caseID,fileName):
     try:
         directory = os.path.join(ROOT_UPLOAD_FOLDER,str(caseID))
         response = make_response(send_from_directory(directory, fileName, as_attachment=True))
-        response.headers["Content-Disposition"] = "attachment; filename={}".format(file_name.encode().decode('latin-1'))
+        response.headers["Content-Disposition"] = "attachment; filename={}".format(fileName.encode().decode('latin-1'))
         return response
     except HTTPException as err:
         return jsonify({"msg":"请求的文件有误"}) ,400

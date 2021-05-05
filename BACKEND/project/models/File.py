@@ -27,3 +27,8 @@ class File(db.Model):
            "fileDescribe": self.fileDescribe,
            "createtime": self.createtime
        }
+    
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        return self

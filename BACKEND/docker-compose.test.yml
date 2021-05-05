@@ -11,7 +11,7 @@ services:
             - 5432:5432
         volumes:
             - ./data/postgresql:/var/lib/postgresql/data
-        network_mode: "bridge"
+        network_mode: "host"
 
     flask-web:
         build: .
@@ -27,4 +27,4 @@ services:
         command: ["flask","run"]
         links:
             - postgres
-        network_mode: "bridge"
+        network_mode: "host"
