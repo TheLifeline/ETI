@@ -11,7 +11,7 @@ var uploader = new Uploader({
   testChunks: false
 })
 // 配置请求的根路径
-axios.defaults.baseURL = 'http://localhost:5000/'
+axios.defaults.baseURL = window.axiosBaseUrl
 Vue.prototype.$http = axios
 Vue.prototype.$uploader = uploader
 
