@@ -3,6 +3,7 @@ from flask import jsonify,request
 from flask import send_file, send_from_directory, make_response
 from flask_jwt import jwt_required, current_identity
 from werkzeug.exceptions import HTTPException, NotFound
+from urllib.parse import quote
 
 from ..config import basedir
 from ..models.File import File
@@ -80,7 +81,8 @@ def download_file(caseID,fileName):
     try:
         directory = os.path.join(ROOT_UPLOAD_FOLDER,str(caseID))
         response = make_response(send_from_directory(directory, fileName, as_attachment=True))
-        response.headers["Content-Disposition"] = "attachment; filename={}".format(fileName.encode().decode('latin-1'))
+        response.headers['Content-Type'] = "application/octet-stream; charset=UTF-8"
+        response.headers["Content-Disposition"] = "attachment;filename*=UTF-8''{}".format(quote(fileName.encode('utf-8')))
         return response
     except HTTPException as err:
         return jsonify({"msg":"请求的文件有误"}) ,400
