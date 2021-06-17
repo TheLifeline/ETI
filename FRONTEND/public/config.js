@@ -1,1 +1,1 @@
-window.axiosBaseUrl="http://192.168.50.250:5000/"
+window.axiosBaseUrl="http://192.168.15.250:5000/"
