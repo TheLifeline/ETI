@@ -55,8 +55,9 @@ export default {
       this.$http
         .post('auth', { username: this.username, password: this.password })
         .then((response) => {
-          console.log(response)
+          console.log(response.data.access_token)
           // TODO:用户状态信息的存储
+          localStorage.setItem('JWT_TOKEN', response.data.access_token)
           this.$router.push({ path: '/index' })
         })
         .catch((error) => {

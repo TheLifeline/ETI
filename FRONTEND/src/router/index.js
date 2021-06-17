@@ -38,5 +38,16 @@ const router = new VueRouter({
     }
   ]
 })
-
+router.beforeEach(({ name }, from, next) => {
+  // 获取 JWT Token
+  if (localStorage.getItem('JWT_TOKEN')) {
+    next()
+  } else {
+    if (name === 'Login') {
+      next()
+    } else {
+      next({ name: 'Login' })
+    }
+  }
+})
 export default router
