@@ -16,6 +16,7 @@ UPLOAD_FOLDER = os.path.join(basedir,"temp")
 
 
 @case_bp.route('/caseinfo', methods=['GET'])
+@jwt_required()
 def get_case_info():
     try:
         return jsonify(get_all_case_info())
