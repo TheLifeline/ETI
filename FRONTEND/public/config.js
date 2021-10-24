@@ -1,1 +1,1 @@
-window.HOST_IP="192.168.1.7"
+window.axiosBaseUrl="http://192.168.50.38:5000/"

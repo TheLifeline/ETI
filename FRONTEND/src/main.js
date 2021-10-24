@@ -11,7 +11,17 @@ var uploader = new Uploader({
   testChunks: false
 })
 // 配置请求的根路径
-axios.defaults.baseURL = 'http://localhost:5000/'
+axios.defaults.baseURL = window.axiosBaseUrl
+axios.interceptors.request.use(
+  config => {
+    if (localStorage.JWT_TOKEN) {
+      config.headers.Authorization = `JWT ${localStorage.JWT_TOKEN}`
+    }
+    return config
+  },
+  err => {
+    return Promise.reject(err)
+  })
 Vue.prototype.$http = axios
 Vue.prototype.$uploader = uploader
 

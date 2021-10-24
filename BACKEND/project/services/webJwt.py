@@ -18,7 +18,7 @@ def error_callback(error):
     return jsonify(OrderedDict([
         ('status_code', error.status_code),
         ('error', error.error),
-        ('description', error.description),
+        ('msg', error.description),
     ])), error.status_code, error.headers
 
 

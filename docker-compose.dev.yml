@@ -1,0 +1,80 @@
+version: '2.2'
+services:
+    flask-web:
+        build: ./BACKEND
+        container_name: flask-web
+        ports:
+            - '5000:5000'
+        volumes:
+            - ./BACKEND/project/:/project
+        environment:
+            FLASK_APP: /project/:create_app('development')
+            FLASK_RUN_HOST: 0.0.0.0
+            FLASK_DEBUG: 1
+        command: ["flask","run"]
+        networks:
+            - etl_net
+
+    es01:
+        image: elasticsearch:7.3.0
+        container_name: es01
+        environment:
+            - discovery.type=single-node
+            - bootstrap.memory_lock=true
+            - http.cors.enabled=true
+            - http.cors.allow-origin=/.*/
+            - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+            - http.cors.allow-credentials=true
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+            - TAKE_FILE_OWNERSHIP=true 
+        ulimits:
+            nofile:
+            soft: 65536
+            hard: 65536
+            memlock:
+            soft: -1
+            hard: -1
+        volumes:
+            - ./ES/plugins:/usr/share/elasticsearch/plugins
+        ports:
+            - 19200:9200
+            - 19300:9300
+        networks:
+            - etl_net
+
+    kibana:
+        image: kibana:7.3.0
+        container_name: kibana
+        environment:
+            - ELASTICSEARCH_HOSTS=http://es01:9200
+            - I18N_LOCALE=zh-CN
+            - xpack.monitoring.ui.container.elasticsearch.enabled=false
+        ports:
+            - 15601:5601
+        networks:
+            - etl_net
+
+    dejavu:
+        image: appbaseio/dejavu:3.4.7
+        container_name: dejavu
+        ports:
+            - '11358:1358'
+        links:
+            - es01
+        networks:
+            - etl_net
+    
+    vue-web:
+        image: nginx
+        container_name: vue-web
+        volumes:
+            - ./FRONTEND/dist:/usr/share/nginx/html
+        networks:
+            - etl_net
+        links:
+            - es01
+            - flask-web
+
+networks:
+    esnet:
+        driver: etl_net
