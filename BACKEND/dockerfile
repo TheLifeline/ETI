@@ -1,5 +1,7 @@
 FROM python:3.7-alpine
 COPY ./r.txt .
+RUN echo -e http://mirrors.ustc.edu.cn/alpine/v3.14/main/ > /etc/apk/repositories
+RUN cat /etc/apk/repositories
 RUN apk add gcc musl-dev linux-headers g++ postgresql-libs postgresql-dev
 RUN pip install -r r.txt
 RUN pip install psycopg2
