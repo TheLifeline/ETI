@@ -18,7 +18,7 @@ def create_app(config_name='default'):
     if config_name!="production":
         with app.app_context():
             models.db.create_all()
-            user = User(username="123",password="123")      
+            user = User(username="admin",password="123")      
             models.db.session.add(user)
             models.db.session.commit()
             case = Case(caseName="test")
