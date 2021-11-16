@@ -101,7 +101,7 @@ export default {
   computed: {},
   methods: {
     upload() {
-      this.$uploader.opts.target = '//localhost:5000/file/upload'
+      this.$uploader.opts.target = window.axiosBaseUrl.slice(5) + 'file/upload'
       this.$uploader.opts.allowDuplicateUploads = true
       const fileQuery = {
         caseID: this.rawItem.caseID,
