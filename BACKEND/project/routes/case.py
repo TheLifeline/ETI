@@ -1,14 +1,9 @@
 from flask import Blueprint
 from flask_jwt import jwt_required, current_identity
-from werkzeug.utils import secure_filename
 from flask import jsonify,request
-from flask import send_file, send_from_directory
 
-from ..config import basedir
 from ..models.Case import get_all_case_info
 from .. import models
-import threading
-import os
 
 
 case_bp = Blueprint('case_bp', __name__)

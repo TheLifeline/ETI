@@ -1,16 +1,12 @@
 from flask import Blueprint
 from flask import jsonify,request
-from flask import send_file, send_from_directory, make_response
-from flask_jwt import jwt_required, current_identity
+from flask import send_from_directory, make_response
 from werkzeug.exceptions import HTTPException, NotFound
 from urllib.parse import quote
 
 from ..config import basedir
-from ..models.File import File
-from ..models.Case import Case
 from ..services import esdb
-# from ..services.ES import search_file_in_ES,save_file
-from project import models
+from ..models.File import File
 import threading
 import os
 

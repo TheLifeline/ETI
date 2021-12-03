@@ -9,7 +9,6 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
     ES_URL='localhost:19200'
-    BASEDIR = os.path.abspath(os.path.dirname(__file__))
     @staticmethod
     def init_app(app):
         pass
