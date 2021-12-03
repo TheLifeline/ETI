@@ -1,4 +1,4 @@
-version: '1.8'
+version: '2.2'
 services:
   es01:
     image: elasticsearch:7.3.0
@@ -71,6 +71,9 @@ services:
       - xpack.monitoring.ui.container.elasticsearch.enabled=false
     ports:
       - 15601:5601    
+    links:
+        - es01
+        - es02
     networks:
       - esnet
   dejavu:

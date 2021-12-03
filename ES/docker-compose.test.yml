@@ -1,4 +1,4 @@
-version: '1.8'
+version: '2.2'
 services:
   es01:
     image: elasticsearch:7.3.0
@@ -48,15 +48,15 @@ services:
         - es01
     networks:
       - esnet
-  nifi:
-    image: apache/nifi:latest
-    container_name: nifi
-    ports:
-        - '18080:8080'
-    links:
-        - es01
-    networks:
-      - esnet
+  # nifi:
+  #   image: apache/nifi:latest
+  #   container_name: nifi
+  #   ports:
+  #       - '18080:8080'
+  #   links:
+  #       - es01
+  #   networks:
+  #     - esnet
 
 networks:
   esnet:
