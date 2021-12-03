@@ -1,9 +1,6 @@
 from elasticsearch_dsl import Document, Integer, Keyword, Text, Boolean
 from elasticsearch_dsl import Q, Search, connections
 
-# Define a default Elasticsearch client
-connect = connections.create_connection(hosts=['localhost:19200'])
-
 
 class FileInfo(Document):
     caseID = Integer()
@@ -26,29 +23,42 @@ class FileInfo(Document):
         self.isDelete=False
         return super(FileInfo, self).save(** kwargs)
 
-def search_file_in_ES(query_str, caseID=None):
-    s = Search(using=connect, index="file").filter('match', isDelete=False)
-    if caseID is not None:
-        s = s.filter("match", caseID=caseID)
-    s = s.query('bool', should=[Q("match", fileDescribe=query_str),
-                                Q("match", fileName=query_str),
-                                Q("match", fileOrigin=query_str),
-                                Q('bool', should=[Q("match", fileType=query_str),
-                                                  Q("match", fileLable=query_str),
-                                                  Q("match", caseName=query_str),
-                                                  Q("match", downloadPath=query_str)])])
+class ESTool():
+    def __new__(cls, *args, **kw):
+        if not hasattr(cls, '_instance'):
+            cls._instance = object.__new__(cls)
+        return cls._instance
+    
+    def __init__(self) -> None:
+        self.connect=None
+    
+    def init(self,app):
+        if self.connect is None:
+            self.connect = connections.create_connection(hosts=[app.config['ES_URL']])
+            FileInfo.init()
+    
+    def save_file(self, **Keyword):
+        # todo: check
+        FileInfo(**Keyword).save()
 
-    response = s.execute()
-    json_list = []
-    for hit in response:
-        result = dict(zip(dir(hit), [getattr(hit, name) for name in dir(hit)]))
-        result["id"] = result["meta"].id
-        result.pop("meta")
-        json_list.append(result)
-    return json_list
+    def search_file_in_ES(self, query_str, caseID=None):
+        s = Search(using=self.connect, index="file").filter('match', isDelete=False)
+        if caseID is not None:
+            s = s.filter("match", caseID=caseID)
+        s = s.query('bool', should=[Q("match", fileDescribe=query_str),
+                                    Q("match", fileName=query_str),
+                                    Q("match", fileOrigin=query_str),
+                                    Q('bool', should=[Q("match", fileType=query_str),
+                                                    Q("match", fileLable=query_str),
+                                                    Q("match", caseName=query_str),
+                                                    Q("match", downloadPath=query_str)])])
 
-def save_file(**Keyword):
-    FileInfo(**Keyword).save()
-
-def init():
-    FileInfo.init()
+        response = s.execute()
+        json_list = []
+        for hit in response:
+            result = dict(zip(dir(hit), [getattr(hit, name) for name in dir(hit)]))
+            result["id"] = result["meta"].id
+            result.pop("meta")
+            json_list.append(result)
+        return json_list
+        

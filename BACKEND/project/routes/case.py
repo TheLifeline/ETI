@@ -12,7 +12,6 @@ import os
 
 
 case_bp = Blueprint('case_bp', __name__)
-UPLOAD_FOLDER = os.path.join(basedir,"temp")
 
 
 @case_bp.route('/caseinfo', methods=['GET'])

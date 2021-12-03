@@ -1,10 +1,12 @@
 from .webJwt import webJwtServices
 from flask_cors import CORS
-from .ES import init
+from .ES import ESTool
 from .webLog import webLog
+esdb = ESTool()
 
 def init_app(app):
+    global esdb
     webJwtServices(app)
     webLog(app)
     CORS(app)
-    init()
+    esdb.init(app=app)

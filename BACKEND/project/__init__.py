@@ -1,9 +1,8 @@
 from flask import Flask
 from .config import config
-from . import models, routes, services
-from .models.Case import Case,get_all_case_info
+from . import services, models, routes
+from .models.Case import Case
 from .models.User import User
-from .models.File import File,file_type
 import random
 
 def create_app(config_name='default'):

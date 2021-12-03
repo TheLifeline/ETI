@@ -8,7 +8,8 @@ from urllib.parse import quote
 from ..config import basedir
 from ..models.File import File
 from ..models.Case import Case
-from ..services.ES import search_file_in_ES,save_file
+from ..services import esdb
+# from ..services.ES import search_file_in_ES,save_file
 from project import models
 import threading
 import os
@@ -36,13 +37,13 @@ def upload_file():
         if totalChunks == 1:
             file.save(os.path.join(upload_folder, filename))
             temp_file = File(caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe).save()
-            save_file(meta={'id': temp_file.id},caseName=caseName,caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
+            esdb.save_file(meta={'id': temp_file.id},caseName=caseName,caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
         else:
             file.save(os.path.join(upload_folder, f"{chunkNumber}-{filename}"))
             if totalChunks ==chunkNumber:
                 threading.Thread(merg_file(filename,int(totalChunks),upload_folder)).start()
                 temp_file = File(caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe).save()
-                save_file(meta={'id': temp_file.id},caseName=caseName,caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
+                esdb.save_file(meta={'id': temp_file.id},caseName=caseName,caseID=caseID,fileName=filename,fileOrigin=fileOrigin,fileType=fileType,fileLable=fileLable,fileDescribe=describe)
         return jsonify({"msg":"success"})
     except Exception as err:
         return jsonify({"msg":str(err)}) ,500
@@ -72,7 +73,7 @@ def search_file():
         caseID = None
         if "caseID" in request.get_json():
             caseID = request.get_json()["caseID"]
-        return jsonify(json_list=search_file_in_ES(searchStr,caseID))
+        return jsonify(json_list=esdb.search_file_in_ES(searchStr,caseID))
     except Exception as err:
         return jsonify({"msg":str(err)}) ,500
 

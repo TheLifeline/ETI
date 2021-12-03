@@ -7,8 +7,9 @@ class Config:
     JWT_AUTH_URL_RULE='/auth'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
-    UPLOAD_FOLDER = os.path.join(basedir,"temp")
 
+    ES_URL='localhost:19200'
+    BASEDIR = os.path.abspath(os.path.dirname(__file__))
     @staticmethod
     def init_app(app):
         pass
