@@ -12,5 +12,6 @@ services:
             FLASK_APP: /project/:create_app('development')
             FLASK_RUN_HOST: 0.0.0.0
             FLASK_DEBUG: 1
+            ES_URL: localhost:19200
         command: ["flask","run"]
         network_mode: "host"

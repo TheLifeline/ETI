@@ -8,7 +8,7 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
-    ES_URL='localhost:19200'
+    ES_URL=os.environ.get('ES_URL')
     @staticmethod
     def init_app(app):
         pass
